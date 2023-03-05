@@ -1,0 +1,39 @@
+datasource db {
+  provider = "postgres"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Order {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  packets   Packet[]
+  agents    Agent[]
+}
+
+model Food {
+  id      Int      @id @default(autoincrement())
+  name    String
+  packets Packet[]
+}
+
+model Packet {
+  id       Int     @id @default(autoincrement())
+  foodId   Int
+  food     Food    @relation(fields: [foodId], references: [id])
+  reserved Boolean @default(false)
+  orderId  Int?
+  order    Order?  @relation(fields: [orderId], references: [id])
+}
+
+model Agent {
+  id       Int     @id @default(autoincrement())
+  name     String
+  reserved Boolean @default(false)
+  orderId  Int?
+  order    Order?  @relation(fields: [orderId], references: [id])
+}
